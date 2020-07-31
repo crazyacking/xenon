@@ -11,7 +11,6 @@ package mysqld
 import (
 	"config"
 	"fmt"
-	"path/filepath"
 )
 
 var (
@@ -19,9 +18,7 @@ var (
 )
 
 const (
-	bash       = "bash"
-	mysqldsafe = "bin/mysqld_safe"
-	mysqladmin = "bin/mysqladmin"
+	bash = "bash"
 )
 
 // LinuxArgs tuple.
@@ -39,7 +36,7 @@ func NewLinuxArgs(conf *config.BackupConfig) *LinuxArgs {
 
 // Start used to start mysqld.
 func (l *LinuxArgs) Start() []string {
-	safe57 := filepath.Join(l.conf.Basedir, mysqldsafe)
+	safe57 := "/usr/sbin/mysqld"
 	args := []string{
 		"-c",
 		fmt.Sprintf("%s --defaults-file=%s > /dev/null&", safe57, l.conf.DefaultsFile),
@@ -49,7 +46,7 @@ func (l *LinuxArgs) Start() []string {
 
 // Stop used to stop the mysqld.
 func (l *LinuxArgs) Stop() []string {
-	admin57 := filepath.Join(l.conf.Basedir, mysqladmin)
+	admin57 := "/usr/bin/mysqladmin"
 	args := []string{
 		"-c",
 	}
@@ -64,7 +61,7 @@ func (l *LinuxArgs) Stop() []string {
 // IsRunning used to check the mysqld is running or not.
 func (l *LinuxArgs) IsRunning() []string {
 	// [m] is a trick to stop you picking up the actual grep process itself
-	safe57 := fmt.Sprintf("[m]ysqld_safe --defaults-file=%s", l.conf.DefaultsFile)
+	safe57 := fmt.Sprintf("[m]ysqld --defaults-file=%s", l.conf.DefaultsFile)
 	args := []string{
 		"-c",
 		fmt.Sprintf("ps aux | grep '%s' | wc -l", safe57),
